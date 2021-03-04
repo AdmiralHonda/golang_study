@@ -1,7 +1,7 @@
 package main
 
 import (
-	"iok_server/v1/handler_logic"
+	"github.com/AdmiralHonda/iok/iok_packeage/handler_logic"
 	"log"
 	"net/http"
 )
