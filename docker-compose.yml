@@ -1,0 +1,7 @@
+version: '3'
+services:
+  iok_main:
+    build: ./go_lang
+    ports: 
+      - "9090:9090"
+    
