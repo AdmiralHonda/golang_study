@@ -1,7 +1,10 @@
-version: '3'
+version: '3.3'
 services:
   golang_study:
-    build: ./go_lang
+    build: .
+    tty: true
     ports: 
       - "9090:8080"
+    volumes: 
+      - ./go_lang:/go/src/admiralhonda
     

@@ -4,6 +4,8 @@ import (
 	"log"
 	"net/http"
 
+	"admiralhonda/trace"
+
 	"github.com/gorilla/websocket"
 )
 
@@ -21,6 +23,8 @@ type room struct {
 
 	// clients holds all current clients in this room.
 	clients map[*client]bool
+
+	tracer trace.Tracer
 }
 
 // newRoom makes a new room that is ready to
@@ -40,20 +44,25 @@ func (r *room) run() {
 		case client := <-r.join:
 			// joining
 			r.clients[client] = true
+			r.tracer.Trace("新規クライアントが参加しました。")
 		case client := <-r.leave:
 			// leaving
 			delete(r.clients, client)
 			close(client.send)
+			r.tracer.Trace("クライアントが退出しました。")
 		case msg := <-r.forward:
 			// forward message to all clients
+			r.tracer.Trace("メッセージを受信しました:  ", string(msg))
 			for client := range r.clients {
 				select {
 				case client.send <- msg:
 					// send the message
+					r.tracer.Trace("クライアントへメッセージを送信しました。")
 				default:
 					// failed to send
 					delete(r.clients, client)
 					close(client.send)
+					r.tracer.Trace("送信に失敗しました。クライアントをクリーンアップします。")
 				}
 			}
 		}
